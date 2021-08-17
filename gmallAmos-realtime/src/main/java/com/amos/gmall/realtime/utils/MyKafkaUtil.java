@@ -9,15 +9,14 @@ import java.util.Properties;
 /**
  * @program: gmallrealtime-parent
  * @description:
- * @create: 2021-08-16 21:34
+ * @create: 2021-08-17 20:40
  */
 public class MyKafkaUtil {
-
     private static String kafkaServer="hadoop01:9092,hadoop02:9092,hadoop03:9092";
 
 
     // TODO 获取flinkkafkaConsumer
-    public static FlinkKafkaConsumer<String> getKafkaSource(String topic,String group){
+    public static FlinkKafkaConsumer<String> getKafkaSource(String topic, String group){
 
         Properties props=new Properties();
         props.setProperty(ConsumerConfig.GROUP_ID_CONFIG,group);
@@ -29,6 +28,5 @@ public class MyKafkaUtil {
 
 
     }
-
 
 }
