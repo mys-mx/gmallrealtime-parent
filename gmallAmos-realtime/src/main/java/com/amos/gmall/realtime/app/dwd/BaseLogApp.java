@@ -1,6 +1,7 @@
 package com.amos.gmall.realtime.app.dwd;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.amos.gmall.realtime.utils.MyKafkaUtil;
 
@@ -15,6 +16,9 @@ import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.ProcessFunction;
+import org.apache.flink.util.Collector;
+import org.apache.flink.util.OutputTag;
 
 import java.text.SimpleDateFormat;
 
@@ -112,7 +116,59 @@ public class BaseLogApp {
                 }
         );
 
-        jsonDSWithFlag.print(">>>>>>>>>>>>>>>>>>");
+//        jsonDSWithFlag.print(">>>>>>>>>>>>>>>>>>");
+        /*
+        TODO 5.分流操作 根据日志数据分为三类-->页面日志，启动日志和曝光日志
+         页面日志输出到主流，启动日志输出到起送侧输出流，曝光日志输出到曝光侧输出流
+        */
+
+        // 定义启动侧输出流标签
+        OutputTag<String> startTag = new OutputTag<String>("start") {
+        };
+        OutputTag<String> displayTag = new OutputTag<String>("display") {
+        };
+        SingleOutputStreamOperator<String> pageDS = jsonDSWithFlag.process(
+                new ProcessFunction<JSONObject, String>() {
+                    @Override
+                    public void processElement(JSONObject jsonObject, Context context, Collector<String> collector) throws Exception {
+                        // 获取启动日志标记
+                        JSONObject startJsonObj = jsonObject.getJSONObject("start");
+
+                        //将json格式转换为字符串，方便输出到侧输出流和kafka
+                        String dataStr = jsonObject.toString();
+                        // 判断是否为启动日志
+                        if (startJsonObj != null && startJsonObj.size() > 0) {
+                            // 如果是启动日志，要输出到启动侧输出流
+                            context.output(startTag, dataStr);
+                        } else {
+                            //如果不是启动日志，获取曝光日志标记
+                            JSONArray displays = jsonObject.getJSONArray("displays");
+                            //判断是否为曝光日志
+                            if (displays != null && displays.size() > 0) {
+                                //遍历输出
+                                for (int i = 0; i < displays.size(); i++) {
+                                    //获取每一条曝光事件
+                                    JSONObject displaysJSONObject = displays.getJSONObject(i);
+                                    String pageId = jsonObject.getJSONObject("page").getString("page_id");
+                                    //给每一条曝光时间加pageId
+                                    displaysJSONObject.put("page_id", pageId);
+
+
+                                    context.output(displayTag, displaysJSONObject.toString());
+                                }
+
+                            } else {
+                                //不是曝光日志就输出到主流
+                                collector.collect(dataStr);
+                            }
+                        }
+
+                    }
+                }
+        );
+        pageDS.getSideOutput(startTag).print("startTag>>>>>>>>>>");
+        pageDS.getSideOutput(displayTag).print("displayTag>>>>>>>>>>>>");
+        pageDS.print("pageTag>>>>>>>>>>");
 
 
         env.execute();
