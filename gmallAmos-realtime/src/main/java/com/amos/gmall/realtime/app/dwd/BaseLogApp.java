@@ -29,6 +29,10 @@ import java.text.SimpleDateFormat;
  */
 public class BaseLogApp {
 
+    private static final String TOPIC_START = "dwd_start_log";
+    private static final String TOPIC_DISPLAY = "dwd_display_log";
+    private static final String TOPIC_PAGE = "dwd_page_log";
+
     public static void main(String[] args) throws Exception {
         // TODO 1.准备环境
         //  1.1创建flink流执行环境
@@ -170,6 +174,11 @@ public class BaseLogApp {
         pageDS.getSideOutput(displayTag).print("displayTag>>>>>>>>>>>>");
         pageDS.print("pageTag>>>>>>>>>>");
 
+        //TODO 6.将不同流数据写回到不同topic中
+
+        pageDS.getSideOutput(startTag).addSink(MyKafkaUtil.getKafkaSink(TOPIC_START));
+        pageDS.getSideOutput(displayTag).addSink(MyKafkaUtil.getKafkaSink(TOPIC_DISPLAY));
+        pageDS.addSink(MyKafkaUtil.getKafkaSink(TOPIC_PAGE));
 
         env.execute();
 
