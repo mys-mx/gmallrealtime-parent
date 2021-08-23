@@ -9,9 +9,9 @@ public class GmallConfig {
     //hbase的命名空间
     public static final String HBASE_SCHEMA = "GMALLAMOS_REALTIME";
 
-
     //phoenix链接地址
     public static final String PHOENIX_SERVER = "jdbc:phoenix:hadoop01,hadoop02,hadoop03:2181";
+    public static final String PHOENIX_DRIVER = "org.apache.phoenix.jdbc.PhoenixDriver";
 
 
 }
