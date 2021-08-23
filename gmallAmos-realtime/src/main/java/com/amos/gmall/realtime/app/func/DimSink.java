@@ -27,7 +27,7 @@ public class DimSink extends RichSinkFunction<JSONObject> {
     public void open(Configuration parameters) throws Exception {
 
         //对连接对象进行初始化
-        Class.forName("org.apache.phoenix.jdbc.PhoenixDriver");
+        Class.forName(GmallConfig.PHOENIX_DRIVER);
         conn = DriverManager.getConnection(GmallConfig.PHOENIX_SERVER);
 
     }
@@ -45,19 +45,19 @@ public class DimSink extends RichSinkFunction<JSONObject> {
             //根据data中属性名和属性值 生成upsert语句
             String upsertSql = genUpsertSql(sinkTable.toUpperCase(), dataJsonObj);
             System.out.println("向phoenix插入数据的SQL：" + upsertSql);
-            PreparedStatement preparedStatement =null;
+            PreparedStatement preparedStatement = null;
             try {
                 //执行SQL
-                 preparedStatement = conn.prepareStatement(upsertSql);
+                preparedStatement = conn.prepareStatement(upsertSql);
                 preparedStatement.executeUpdate();
 
                 //注意：执行完phoenix插入操作之后需要手动提交事务
                 conn.commit();
-            }catch (SQLException e){
+            } catch (SQLException e) {
                 e.printStackTrace();
                 throw new RuntimeException("向phoenix插入数据失败");
-            }finally {
-                if(preparedStatement!=null){
+            } finally {
+                if (preparedStatement != null) {
                     preparedStatement.close();
                 }
 
