@@ -145,6 +145,9 @@ public class BaseLogApp {
                             // 如果是启动日志，要输出到启动侧输出流
                             context.output(startTag, dataStr);
                         } else {
+
+                            //不是曝光日志就输出到主流
+                            collector.collect(dataStr);
                             //如果不是启动日志，获取曝光日志标记
                             JSONArray displays = jsonObject.getJSONArray("displays");
                             //判断是否为曝光日志
@@ -161,9 +164,6 @@ public class BaseLogApp {
                                     context.output(displayTag, displaysJSONObject.toString());
                                 }
 
-                            } else {
-                                //不是曝光日志就输出到主流
-                                collector.collect(dataStr);
                             }
                         }
 
