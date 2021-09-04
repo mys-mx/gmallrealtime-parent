@@ -117,6 +117,14 @@ public class UniqueVisitApp {
         );
         filterDS.print(">>>>>>>>>>>>>>>>>>>");
 
+        //todo 6.向kafka中写回，需要将json转换为String
+
+        SingleOutputStreamOperator<String> kafkaDS = filterDS.map(json -> json.toJSONString());
+
+
+        kafkaDS.addSink(MyKafkaUtil.getKafkaSink(sinkTopic));
+
+
         env.execute();
     }
 
