@@ -31,9 +31,13 @@ public class ExecutionEnvUtil {
 
     public static StreamExecutionEnvironment prepare(ParameterTool parameterTool) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        // 30分钟内 最大20次失败，每次间隔60秒
-        env.getConfig().setRestartStrategy(RestartStrategies.failureRateRestart(20, Time.of(60, TimeUnit.MINUTES),
-                Time.of(60, TimeUnit.SECONDS)));
+        // checkpoint 重启机制 60分钟内 最大20次失败，每次间隔60秒
+        env.getConfig()
+                .setRestartStrategy(
+                        RestartStrategies.failureRateRestart(
+                                20,
+                                Time.of(60, TimeUnit.MINUTES),
+                                Time.of(60, TimeUnit.SECONDS)));
         if (parameterTool.getBoolean(PropertiesConstants.STREAM_CHECKPOINT_ENABLE, true)) {
             env.enableCheckpointing(parameterTool.getLong(PropertiesConstants.STREAM_CHECKPOINT_INTERVAL, 10000));
         }
@@ -42,7 +46,9 @@ public class ExecutionEnvUtil {
         env.getConfig().setAutoWatermarkInterval(1000L);
         CheckpointConfig checkpointConfig = env.getCheckpointConfig();
         // checkpoint 过期时间 30分钟
-        checkpointConfig.setCheckpointTimeout(1000 * 60 * 60);
+        checkpointConfig.setCheckpointTimeout(10000L);
+        // checkpoint同时存在2个
+        checkpointConfig.setMaxConcurrentCheckpoints(2);
         checkpointConfig.enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
         return env;
     }
