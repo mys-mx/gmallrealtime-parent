@@ -8,7 +8,7 @@ public class CommonPropertiesConstants {
     /**
      * Kafka 消费组id
      */
-    public static final String PROPERTIES_FILE_NAME ="";
+    public static final String PROPERTIES_FILE_NAME ="/common.properties";
 
 
     /**
@@ -29,29 +29,5 @@ public class CommonPropertiesConstants {
      */
     public static final String FS_STATE_BACKEND_ADDRESS = "fs.state.backend.address";
 
-    /**
-     * mysql host
-     */
-    public static final String MYSQL_HOST = "mysql.host";
-    /**
-     * mysql 用户
-     */
-    public static final String MYSQL_USER = "mysql.user";
-    /**
-     * mysql 密码
-     */
-    public static final String MYSQL_PASSWORD = "mysql.password";
-    /**
-     * mysql 端口
-     */
-    public static final String MYSQL_PORT = "mysql.port";
-    /**
-     * mysql 数据库
-     */
-    public static final String MYSQL_DATABASES = "mysql.databases";
 
-    /**
-     * mysql 表
-     */
-    public static final String MYSQL_TABLES = "mysql.tables";
 }
