@@ -1,6 +1,6 @@
 package com.amos.gmall.realtime.utils;
 
-import com.amos.gmall.realtime.constants.CommonPropertiesConstants;
+import com.amos.gmall.realtime.common.CommonPropertiesConstants;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
