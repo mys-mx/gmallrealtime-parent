@@ -1,5 +1,6 @@
 package com.amos.gmall.realtime.utils;
 
+import com.amos.gmall.realtime.constants.CommonPropertiesConstants;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
@@ -16,8 +17,8 @@ import java.util.Properties;
  */
 public class MyKafkaUtil {
 
-    private static String KAFKA_SERVER = "hadoop01:9092,hadoop02:9092,hadoop03:9092";
-    private static String DEFAULT_TOPIC = "DEFAULT_DATA";
+    private static final String KAFKA_SERVER = CommonPropertiesConstants.KAFKA_BROKERS;
+    private static final String DEFAULT_TOPIC = CommonPropertiesConstants.DEFAULT_DATA;
 
 
     // TODO 获取flinkkafkaConsumer
