@@ -5,8 +5,11 @@ import com.alibaba.ververica.cdc.debezium.DebeziumSourceFunction;
 import com.alibaba.ververica.cdc.debezium.StringDebeziumDeserializationSchema;
 import com.amos.gmall.realtime.common.CommonPropertiesConstants;
 import com.amos.gmall.realtime.common.MysqlPropertiesConstants;
+import com.amos.gmall.realtime.common.PropertiesConstants;
 import com.amos.gmall.realtime.utils.ExecutionEnvUtil;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.runtime.state.filesystem.FsStateBackend;
+import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import com.alibaba.ververica.cdc.connectors.mysql.MySQLSource;
@@ -21,37 +24,47 @@ public class FlinkCDC {
     /**
      * 参数路径
      */
-    private static final String mysqlPort = CommonPropertiesConstants.MYSQL_PORT;
-    private static final String mysqlHost = CommonPropertiesConstants.MYSQL_HOST;
-    private static final String mysqlUser = CommonPropertiesConstants.MYSQL_USER;
-    private static final String mysqlPassword = CommonPropertiesConstants.MYSQL_PASSWORD;
-    private static final String mysqlDatabase = CommonPropertiesConstants.MYSQL_DATABASES;
-    private static final String mysqlTables = CommonPropertiesConstants.MYSQL_TABLES;
-    private static final String jobName = "FlinkCDC";
+    private static final String JOB_NAME = "FlinkCDC";
+    private static final int CHECKPOINT_INTERVAL = 5000;
+    private static final String MYSQL_PORT = MysqlPropertiesConstants.MYSQL_PORT;
+    private static final String MYSQL_HOST = MysqlPropertiesConstants.MYSQL_HOST;
+    private static final String MYSQL_USER = MysqlPropertiesConstants.MYSQL_USER;
+    private static final String MYSQL_PASSWORD = MysqlPropertiesConstants.MYSQL_PASSWORD;
+    private static final String MYSQL_DATABASE = MysqlPropertiesConstants.MYSQL_DATABASES;
+    private static final String MYSQL_TABLES = MysqlPropertiesConstants.MYSQL_TABLES;
+    private static final String CHECKPOINT_PATH = MysqlPropertiesConstants.FLINK_CDC_BACKEND_PATH;
+    private static final String CDC_PARALLELISM = MysqlPropertiesConstants.CDC_PARALLELISM;
+
     /**
      * 参数配置路径
      */
     private static final String PROPERTIES_FILE_NAME = MysqlPropertiesConstants.MYSQL_PROPERTIES_FILE_NAME;
 
+    private static final String FS_STATE_BACKEND_ADDRESS = CommonPropertiesConstants.FS_STATE_BACKEND_ADDRESS;
 
     public static void main(String[] args) throws Exception {
         ParameterTool parameterTool = ExecutionEnvUtil.createParameterToolNew(args, PROPERTIES_FILE_NAME);
 
 
         //1. 获取执行环境
-        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        env.setParallelism(1);
+        StreamExecutionEnvironment env = ExecutionEnvUtil.prepare(parameterTool);
+        env.enableCheckpointing(CHECKPOINT_INTERVAL, CheckpointingMode.EXACTLY_ONCE);
+        env.setStateBackend(new FsStateBackend(
+                parameterTool.get(FS_STATE_BACKEND_ADDRESS)
+                        + parameterTool.get(CHECKPOINT_PATH)
+        ));
+        env.setParallelism(parameterTool.getInt(CDC_PARALLELISM));
 
         //2.通过flink-cdc构建sourceFunction,并读取数据
         DebeziumSourceFunction<String> sourceFunction = MySQLSource.<String>builder()
-                .hostname(parameterTool.get(mysqlHost))
-                .username(parameterTool.get(mysqlUser))
-                .password(parameterTool.get(mysqlPassword))
-                .port(parameterTool.getInt(mysqlPort))
+                .hostname(parameterTool.get(MYSQL_HOST))
+                .username(parameterTool.get(MYSQL_USER))
+                .password(parameterTool.get(MYSQL_PASSWORD))
+                .port(parameterTool.getInt(MYSQL_PORT))
                 //flink cdc可以同时读多个库
-                .databaseList(parameterTool.get(mysqlDatabase))
+                .databaseList(parameterTool.get(MYSQL_DATABASE))
                 //如果不传入参数则是监控该库下面所有的表，如果指定监控一个库下面的表需要写db.tableName
-                .tableList(parameterTool.get(mysqlTables))
+                .tableList(parameterTool.get(MYSQL_TABLES))
                 .deserializer(new StringDebeziumDeserializationSchema())
                 /**
                  * 1.initial是将历史数据全量加载(加锁)，然后再增量查binlog
@@ -68,7 +81,7 @@ public class FlinkCDC {
         //3.打印数据
         stringDataStreamSource.print();
         //4.启动任务
-        env.execute(jobName);
+        env.execute(JOB_NAME);
 
     }
 }
