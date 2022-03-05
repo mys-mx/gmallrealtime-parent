@@ -3,19 +3,19 @@ package com.amos.crud
 import org.apache.hudi.QuickstartUtils.DataGenerator
 import org.apache.spark.sql.{SaveMode, SparkSession}
 
-object InsertData {
-  def insertData(spark: SparkSession, table: String, path: String,dataGen: DataGenerator): Unit = {
+object UpdateData {
+  def updateData(spark: SparkSession, table: String, path: String, dataGen: DataGenerator): Unit = {
 
     import spark.implicits._
 
     // step1：模拟乘车数据
     import org.apache.hudi.QuickstartUtils._
-    val inserts = convertToStringList(dataGen.generateInserts(100))
+    val updates = convertToStringList(dataGen.generateUpdates(100))
 
     import scala.collection.JavaConverters._
 
-    val insertDF = spark.read.json(
-      spark.sparkContext.parallelize(inserts.asScala, 2).toDS()
+    val updateDF = spark.read.json(
+      spark.sparkContext.parallelize(updates.asScala, 2).toDS()
     )
 
     /* insertDF.printSchema()
@@ -26,8 +26,8 @@ object InsertData {
     import org.apache.hudi.config.HoodieWriteConfig._
 
 
-    insertDF.write
-      .mode(SaveMode.Overwrite)
+    updateDF.write
+      .mode(SaveMode.Append)
       .format("hudi")
       .option("hoodie.insert.shuffle.parallelism", "2")
       .option("hoodie.upsert.shuffle.parallelism", "2")
