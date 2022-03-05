@@ -18,7 +18,7 @@ object QueryData{
     //    tripsDF.show(10, truncate = false)
     //查询费用大于20，小于50的乘车数据
     tripsDF.filter($"fare" >= 20 && $"fare" < 50)
-      .select($"driver", $"rider", $"fare", $"end_lat",
+      .select($"uuid",$"driver", $"rider", $"fare", $"end_lat",
         $"end_lon", $"partitionpath", $"_hoodie_commit_time")
       .orderBy($"fare".desc, $"_hoodie_commit_time".desc)
       .show(20, truncate = false)
