@@ -1,0 +1,113 @@
+
+create database db_hudi;
+use db_hudi;
+
+create external table db_hudi.tbl_hudi_didi
+(
+    order_id            bigint,
+    product_id          int,
+    city_id             int,
+    district            int,
+    county              int,
+    type                int,
+    combo_type          int,
+    traffic_type        int,
+    passenger_count     int,
+    driver_product_id   int,
+    start_dest_distance int,
+    arrive_time         string,
+    departure_time      string,
+    pre_total_fee       double,
+    normal_time         string,
+    bubble_trace_id     string,
+    product_1level      int,
+    dest_lng            double,
+    dest_lat            double,
+    starting_lng        double,
+    starting_lat        double,
+    partitionpath       string,
+    ts                  bigint
+)
+    partitioned by (date_str string)
+    row format serde
+        'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'
+    stored as INPUTFORMAT
+        'org.apache.hudi.hadoop.HoodieParquetInputFormat'
+        outputformat
+            'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat'
+    location '/hudi-warehouse/tbl_didi_haikou';
+
+
+--查看分区表的分区
+show partitions db_hudi.tbl_hudi_didi;
+
+
+--手动添加分区
+alter table db_hudi.tbl_hudi_didi
+    add if not exists partition (date_str = "2017-5-22") location '/hudi-warehouse/tbl_didi_haikou/2017-5-22';
+alter table db_hudi.tbl_hudi_didi
+    add if not exists partition (date_str = "2017-5-23") location '/hudi-warehouse/tbl_didi_haikou/2017-5-23';
+alter table db_hudi.tbl_hudi_didi
+    add if not exists partition (date_str = "2017-5-24") location '/hudi-warehouse/tbl_didi_haikou/2017-5-24';
+alter table db_hudi.tbl_hudi_didi
+    add if not exists partition (date_str = "2017-5-25") location '/hudi-warehouse/tbl_didi_haikou/2017-5-25';
+alter table db_hudi.tbl_hudi_didi
+    add if not exists partition (date_str = "2017-5-26") location '/hudi-warehouse/tbl_didi_haikou/2017-5-26';
+alter table db_hudi.tbl_hudi_didi
+    add if not exists partition (date_str = "2017-5-27") location '/hudi-warehouse/tbl_didi_haikou/2017-5-27';
+alter table db_hudi.tbl_hudi_didi
+    add if not exists partition (date_str = "2017-5-28") location '/hudi-warehouse/tbl_didi_haikou/2017-5-28';
+alter table db_hudi.tbl_hudi_didi
+    add if not exists partition (date_str = "2017-5-29") location '/hudi-warehouse/tbl_didi_haikou/2017-5-29';
+alter table db_hudi.tbl_hudi_didi
+    add if not exists partition (date_str = "2017-5-30") location '/hudi-warehouse/tbl_didi_haikou/2017-5-30';
+alter table db_hudi.tbl_hudi_didi
+    add if not exists partition (date_str = "2017-5-31") location '/hudi-warehouse/tbl_didi_haikou/2017-5-32';
+alter table db_hudi.tbl_hudi_didi
+    add if not exists partition (date_str = "2017-6-1") location '/hudi-warehouse/tbl_didi_haikou/2017-6-1';
+alter table db_hudi.tbl_hudi_didi
+    add if not exists partition (date_str = "2017-6-2") location '/hudi-warehouse/tbl_didi_haikou/2017-6-2';
+alter table db_hudi.tbl_hudi_didi
+    add if not exists partition (date_str = "2017-6-3") location '/hudi-warehouse/tbl_didi_haikou/2017-6-3';
+alter table db_hudi.tbl_hudi_didi
+    add if not exists partition (date_str = "2017-6-4") location '/hudi-warehouse/tbl_didi_haikou/2017-6-4';
+alter table db_hudi.tbl_hudi_didi
+    add if not exists partition (date_str = "2017-6-5") location '/hudi-warehouse/tbl_didi_haikou/2017-6-5';
+alter table db_hudi.tbl_hudi_didi
+    add if not exists partition (date_str = "2017-6-6") location '/hudi-warehouse/tbl_didi_haikou/2017-6-6';
+alter table db_hudi.tbl_hudi_didi
+    add if not exists partition (date_str = "2017-6-7") location '/hudi-warehouse/tbl_didi_haikou/2017-6-7';
+alter table db_hudi.tbl_hudi_didi
+    add if not exists partition (date_str = "2017-6-8") location '/hudi-warehouse/tbl_didi_haikou/2017-6-8';
+alter table db_hudi.tbl_hudi_didi
+    add if not exists partition (date_str = "2017-6-9") location '/hudi-warehouse/tbl_didi_haikou/2017-6-9';
+alter table db_hudi.tbl_hudi_didi
+    add if not exists partition (date_str = "2017-6-10") location '/hudi-warehouse/tbl_didi_haikou/2017-6-10';
+
+
+--测试查询数据
+--设置非严格模式
+set hive.mapred.mode=nonstrict;
+select order_id, product_id, type, pre_total_fee, start_dest_distance
+from db_hudi.tbl_hudi_didi
+         limit 20;
+
+--开发测试，设置运行模式为本地模式
+set hive.exec.mode.local.auto=true;
+
+set hive.exec.mode.local.auto.inputbytes.max=50000000;
+
+--1.订单类型统计
+
+
+with tmp as (
+    select product_id, count(1) as total from db_hudi.tbl_hudi_didi group by product_id
+)
+select case product_id
+           when 1 then "滴滴专车"
+           when 2 then "滴滴企业专车"
+           when 3 then "滴滴快车"
+           when 4 then "滴滴企业快车"
+           end as order_type,
+       total
+from tmp;

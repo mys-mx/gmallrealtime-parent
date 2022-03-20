@@ -10,7 +10,7 @@ import org.apache.spark.sql.functions._
 
 object DiDiStorageSpark {
   // 滴滴数据路径
-  val dataPath: String = "file:///D:/FLINK/gmallrealtime-parent/hudi-spark/src/main/scala/com/amos/hudi/data/dwv_order_make_haikou_1.txt"
+  val dataPath: String = "file:///D:/FLINK/gitnew/gmallrealtime-parent/hudi-spark/src/main/scala/com/amos/hudi/data/dwv_order_make_haikou_1.txt"
 
   val hudiTableName: String = "tbl_didi_haikou"
   val hudiTablePath: String = "/hudi-warehouse/tbl_didi_haikou"
