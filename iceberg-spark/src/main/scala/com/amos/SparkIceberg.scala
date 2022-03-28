@@ -15,6 +15,7 @@ object SparkIceberg {
       // 设置 hive catalog
       .config("spark.sql.catalog.hive_prod", "org.apache.iceberg.spark.SparkCatalog")
       .config("spark.sql.catalog.hive_prod.type", "hive")
+      // 元数据的链接url;默认在 hive-site.xml 中配置
       .config("spark.sql.catalog.hive_prod.uri", "thrift://hadoop01:9083")
       .config("iceberg.engine.hive.enabled", "true")
 
