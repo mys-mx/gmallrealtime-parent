@@ -6,7 +6,7 @@ import org.apache.spark.sql.SparkSession
 /**
  * SparkSQL 与 Iceberg整合
  */
-object SparkIceberg_create {
+object SparkIceberg_DDL {
   def main(args: Array[String]): Unit = {
 
     //创建Spark Catalog
@@ -59,7 +59,7 @@ object SparkIceberg_create {
         | dt int,
         | ts timestamp)
         |using iceberg
-        |partitioned by (dt,days(ts))
+        |partitioned by (dt,hours(ts))
         |""".stripMargin)
 
     spark.stop()
