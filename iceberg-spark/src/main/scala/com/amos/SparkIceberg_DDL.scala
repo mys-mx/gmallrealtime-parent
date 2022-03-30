@@ -49,11 +49,15 @@ object SparkIceberg_DDL {
     //        |partitioned by (dt)
     //        |""".stripMargin)
 
+    spark.sql(
+      """
+        | drop table if exists hadoop_prod.default.test_hadoop_dt_hidden1
+        |""".stripMargin)
     //创建隐藏分区表
     spark.sql(
       """
         |create table if not exists
-        |hadoop_prod.default.test_hadoop_dt_hidden(
+        |hadoop_prod.default.test_hadoop_dt_hidden1(
         | id int,
         | name string,
         | dt int,

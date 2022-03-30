@@ -23,20 +23,20 @@ object SparkIceberg_Insert {
     //        |""".stripMargin)
 
     // 插入到普通分区表中
-    //    spark.sql(
-    //      """
-    //        |insert into hadoop_prod.default.test_hadoop_dt
-    //        |values (1,"张三",21),(2,"李四",21)
-    //        |""".stripMargin)
-
-    // 插入到隐藏分区表中
     spark.sql(
       """
-        |insert into hadoop_prod.default.test_hadoop_dt_hidden1
-        |values
-        |(1,"张居正",22,cast(from_unixtime(1638254119) as timestamp)),
-        |(2,"杜甫",22,cast(from_unixtime(1648177719) as timestamp))
+        |insert into hadoop_prod.default.test_hadoop_dt
+        |values (5,"小旋风",21),(6,"狮驼峰",21)
         |""".stripMargin)
+
+    // 插入到隐藏分区表中
+//    spark.sql(
+//      """
+//        |insert into hadoop_prod.default.test_hadoop_dt_hidden1
+//        |values
+//        |(3,"李白",22,cast(from_unixtime(1638254119) as timestamp)),
+//        |(4,"李商隐",22,cast(from_unixtime(1648177719) as timestamp))
+//        |""".stripMargin)
 
     //update
     //    spark.sql(
@@ -46,14 +46,14 @@ object SparkIceberg_Insert {
 
 
     //merge into
-    spark.sql(
-      """
-        |merge into hadoop_prod.default.test_hadoop_dt_hidden t
-        |using (select * from hadoop_prod.default.test_hadoop_dt_hidden1) s
-        |on t.id=s.id
-        |WHEN MATCHED  THEN UPDATE SET *
-        |when not matched then insert *
-        |""".stripMargin)
+    //    spark.sql(
+    //      """
+    //        |merge into hadoop_prod.default.test_hadoop_dt_hidden t
+    //        |using (select * from hadoop_prod.default.test_hadoop_dt_hidden1) s
+    //        |on t.id=s.id
+    //        |WHEN MATCHED  THEN UPDATE SET *
+    //        |when not matched then insert *
+    //        |""".stripMargin)
 
     spark.sql(
       """
