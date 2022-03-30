@@ -16,11 +16,13 @@
     </properties>
 
     <dependencies>
+
         <dependency>
-            <groupId>com.alibaba.ververica</groupId>
-            <artifactId>ververica-connector-iceberg</artifactId>
-            <version>1.13-vvr-4.0.7</version>
+            <groupId>org.apache.iceberg</groupId>
+            <artifactId>iceberg-core</artifactId>
+            <version>0.12.1</version>
         </dependency>
+
         <dependency>
             <groupId>org.apache.iceberg</groupId>
             <artifactId>iceberg-flink-runtime</artifactId>
