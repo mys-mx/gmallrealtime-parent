@@ -26,7 +26,7 @@ import java.util.Map;
  * @description:
  * @create: 2022-03-31 13:23
  */
-public class FlinkIcebergHive {
+public class FlinkIcebergCreateInert {
     public static void main(String[] args) throws Exception {
         // 1 设置Flink执行环境
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
