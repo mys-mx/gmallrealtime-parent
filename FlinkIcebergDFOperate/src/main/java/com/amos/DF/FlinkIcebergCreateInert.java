@@ -29,7 +29,7 @@ import java.util.Map;
  */
 public class FlinkIcebergCreateInert {
 
-    // 4 Hadoop集群
+    //  Hadoop集群
     private static final String basePath = "hdfs://hadoop-slave2:6020/warehouse/iceberg/";
     private static final String tablePath = basePath.concat("hadoop/flink_iceberg_df");
     private static final String BOOTS_SERVER = "node187:9092,hadoop-slave2:9092,node186:9092";
