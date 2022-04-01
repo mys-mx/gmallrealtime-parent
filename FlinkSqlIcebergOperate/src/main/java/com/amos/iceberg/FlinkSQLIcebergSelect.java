@@ -23,16 +23,21 @@ public class FlinkSQLIcebergSelect {
 
         //1.设置catalog
         tableEnv.executeSql("create catalog hadoop_iceberg with ('type'='iceberg'," +
-                "'catalog-type'='hadoop','warehouse'='hdfs://hadoop01:8020/flink_iceberg')");
+                "'catalog-type'='hadoop','warehouse'='hdfs://hadoop-slave2:6020/flink_iceberg')");
 
         //2.批量读取表数据
-        TableResult tableResult = tableEnv.executeSql("select * from hadoop_iceberg.iceberg_db.flink_iceberg_sql");
-        tableResult.print();
+//        TableResult tableResult = tableEnv.executeSql("select * from hadoop_iceberg.iceberg_db.flink_iceberg_sql");
+//        tableResult.print();
 
 
-        //3.实时读取iceberg表数据
+        //3.实时读取iceberg表数据，从头读取数据
         TableResult tableResult1 = tableEnv.executeSql("select * from hadoop_iceberg.iceberg_db.flink_iceberg_sql /*+ OPTIONS('streaming'='true','monitor-interval'='1s')*/");
         tableResult1.print();
+
+        //4. 实时通过指定快照读取iceberg表数据 从快照751429138120432249往后读取数据
+//        TableResult tableResult = tableEnv.executeSql("select * from hadoop_iceberg.iceberg_db.flink_iceberg_sql /*+ OPTIONS('streaming'='true','monitor-interval'='1s','start-snapshot-id'='2062013270843391418') */");
+//        tableResult.print();
+
 
     }
 }

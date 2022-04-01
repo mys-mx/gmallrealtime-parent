@@ -11,7 +11,7 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <flink.version>1.11.6</flink.version>
+        <flink.version>1.11.3</flink.version>
         <hadoop.version>3.0.0</hadoop.version>
         <iceberg.version>0.11.1</iceberg.version>
     </properties>

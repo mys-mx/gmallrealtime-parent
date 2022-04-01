@@ -18,7 +18,7 @@ public class FlinkSQLCreateInsert {
         env.enableCheckpointing(1000);
         //1.设置catalog
         tableEnv.executeSql("create catalog hadoop_iceberg with ('type'='iceberg'," +
-                "'catalog-type'='hadoop','warehouse'='hdfs://hadoop01:8020/flink_iceberg')");
+                "'catalog-type'='hadoop','warehouse'='hdfs://hadoop-slave2:6020/flink_iceberg')");
 
         //2.使用当前catalog
         tableEnv.useCatalog("hadoop_iceberg");
@@ -30,14 +30,10 @@ public class FlinkSQLCreateInsert {
         tableEnv.useDatabase("iceberg_db");
 
         //5.创建Iceberg表
-        tableEnv.executeSql("create table if not exists hadoop_iceberg.iceberg_db.flink_iceberg_sql(id int,age int,name string,loc string) partitioned by (loc)");
+        tableEnv.executeSql("create table  hadoop_iceberg.iceberg_db.flink_iceberg_sql(id int,name string,age int,loc string) partitioned by (loc)");
 
         //6.向表中插入数据
-        tableEnv.executeSql("insert into hadoop_iceberg.iceberg_db.flink_iceberg_sql values (1,18,'zs','shanghai'),(2,19,'ls','beijing'),(3,20,'lm','shanghai')");
-
-
-        //7.查询表中数据
-        tableEnv.executeSql("select * from hadoop_iceberg.iceberg_db.flink_iceberg_sql").print();
+        tableEnv.executeSql("insert into hadoop_iceberg.iceberg_db.flink_iceberg_sql values (1,'zs',18,'shanghai'),(2,'ls',19,'beijing'),(3,'lm',20,'shanghai')");
 
 
     }
