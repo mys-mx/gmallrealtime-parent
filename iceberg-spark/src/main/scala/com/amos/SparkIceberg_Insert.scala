@@ -11,7 +11,7 @@ object SparkIceberg_Insert {
       //设置hadoop catalog
       .config("spark.sql.catalog.hadoop_prod", "org.apache.iceberg.spark.SparkCatalog")
       .config("spark.sql.catalog.hadoop_prod.type", "hadoop")
-      .config("spark.sql.catalog.hadoop_prod.warehouse", "hdfs://hadoop01:8020/sparkoperateiceberg")
+      .config("spark.sql.catalog.hadoop_prod.warehouse", "hdfs://hadoop-slave2:6020/sparkoperateiceberg")
       .config("spark.sql.extensions", "org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions")
       .getOrCreate()
 
@@ -23,20 +23,63 @@ object SparkIceberg_Insert {
     //        |""".stripMargin)
 
     // 插入到普通分区表中
-    spark.sql(
-      """
-        |insert into hadoop_prod.default.test_hadoop_dt
-        |values (5,"小旋风",21),(6,"狮驼峰",21)
-        |""".stripMargin)
-
-    // 插入到隐藏分区表中
 //    spark.sql(
 //      """
-//        |insert into hadoop_prod.default.test_hadoop_dt_hidden1
-//        |values
-//        |(3,"李白",22,cast(from_unixtime(1638254119) as timestamp)),
-//        |(4,"李商隐",22,cast(from_unixtime(1648177719) as timestamp))
+//        |insert into hadoop_prod.default.test_hadoop_dt_hidden
+//        |values (5,"小旋风",21),(6,"狮驼峰",21)
 //        |""".stripMargin)
+
+    // 插入到隐藏分区表中
+    spark.sql(
+      """
+        |insert into hadoop_prod.default.test_hadoop_dt_hidden
+        |values
+        |(1,"杜甫",21,cast(from_unixtime(1638254119) as timestamp)),
+        |(2,"杜聿明",21,cast(from_unixtime(1648177719) as timestamp))
+        |""".stripMargin)
+
+    Thread.sleep(10000)
+
+    spark.sql(
+      """
+        |insert into hadoop_prod.default.test_hadoop_dt_hidden
+        |values
+        |(3,"李白",21,cast(from_unixtime(1638254119) as timestamp)),
+        |(4,"李商隐",21,cast(from_unixtime(1648177719) as timestamp))
+        |""".stripMargin)
+
+    Thread.sleep(10000)
+
+    spark.sql(
+      """
+        |insert into hadoop_prod.default.test_hadoop_dt_hidden
+        |values
+        |(5,"张飞",21,cast(from_unixtime(1638254119) as timestamp)),
+        |(6,"李逵",21,cast(from_unixtime(1648177719) as timestamp))
+        |""".stripMargin)
+
+
+    Thread.sleep(10000)
+
+    spark.sql(
+      """
+        |insert into hadoop_prod.default.test_hadoop_dt_hidden
+        |values
+        |(7,"夏侯惇",21,cast(from_unixtime(1638254119) as timestamp)),
+        |(8,"太史慈",21,cast(from_unixtime(1648177719) as timestamp))
+        |""".stripMargin)
+
+
+    Thread.sleep(10000)
+
+    spark.sql(
+      """
+        |insert into hadoop_prod.default.test_hadoop_dt_hidden
+        |values
+        |(9,"吕蒙",21,cast(from_unixtime(1638254119) as timestamp)),
+        |(10,"陆逊",21,cast(from_unixtime(1648177719) as timestamp))
+        |""".stripMargin)
+
 
     //update
     //    spark.sql(
@@ -55,16 +98,10 @@ object SparkIceberg_Insert {
     //        |when not matched then insert *
     //        |""".stripMargin)
 
-    spark.sql(
-      """
-        |select * from hadoop_prod.default.test_hadoop_dt_hidden1
-        |
-        |""".stripMargin).show()
 
     spark.sql(
       """
         |select * from hadoop_prod.default.test_hadoop_dt_hidden
-        |
         |""".stripMargin).show()
 
     spark.stop()

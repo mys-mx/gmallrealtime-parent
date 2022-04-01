@@ -22,7 +22,7 @@ object SparkIceberg_DDL {
       //设置hadoop catalog
       .config("spark.sql.catalog.hadoop_prod", "org.apache.iceberg.spark.SparkCatalog")
       .config("spark.sql.catalog.hadoop_prod.type", "hadoop")
-      .config("spark.sql.catalog.hadoop_prod.warehouse", "hdfs://hadoop01:8020/sparkoperateiceberg")
+      .config("spark.sql.catalog.hadoop_prod.warehouse", "hdfs://hadoop-slave2:6020/sparkoperateiceberg")
       .getOrCreate()
 
     // 创建普通iceberg表
@@ -51,19 +51,21 @@ object SparkIceberg_DDL {
 
     spark.sql(
       """
-        | drop table if exists hadoop_prod.default.test_hadoop_dt_hidden1
+        | drop table if exists hadoop_prod.default.test_hadoop_dt_hidden
         |""".stripMargin)
     //创建隐藏分区表
     spark.sql(
       """
         |create table if not exists
-        |hadoop_prod.default.test_hadoop_dt_hidden1(
+        |hadoop_prod.default.test_hadoop_dt_hidden(
         | id int,
         | name string,
         | dt int,
         | ts timestamp)
         |using iceberg
         |partitioned by (dt,hours(ts))
+        |TBLPROPERTIES('write.metadata.delete-after-commit.enabled'='true',
+        |'write.metadata.previous-versions-max'='2')
         |""".stripMargin)
 
     spark.stop()

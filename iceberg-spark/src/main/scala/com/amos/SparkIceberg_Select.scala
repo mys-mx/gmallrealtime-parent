@@ -11,7 +11,7 @@ object SparkIceberg_Select {
       //设置hadoop catalog
       .config("spark.sql.catalog.hadoop_prod", "org.apache.iceberg.spark.SparkCatalog")
       .config("spark.sql.catalog.hadoop_prod.type", "hadoop")
-      .config("spark.sql.catalog.hadoop_prod.warehouse", "hdfs://hadoop01:8020/sparkoperateiceberg")
+      .config("spark.sql.catalog.hadoop_prod.warehouse", "hdfs://hadoop-slave2:6020/sparkoperateiceberg")
       .config("spark.sql.extensions", "org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions")
       .getOrCreate()
 
@@ -58,11 +58,11 @@ object SparkIceberg_Select {
     //spark3.x 还可以指定sql查询 3242306923457299938
     spark.sql(
       """
-        |CALL hadoop_prod.system.set_current_snapshot("default.test_hadoop_dt",  2247400554481143023 )
-        |""".stripMargin).show()
+        |CALL hadoop_prod.system.set_current_snapshot("default.test_hadoop_dt_hidden",  6100848443512088913 )
+        |""".stripMargin)
     spark.sql(
       """
-        |select * from hadoop_prod.default.test_hadoop_dt
+        |select * from hadoop_prod.default.test_hadoop_dt_hidden
         |""".stripMargin).show()
 
     spark.stop()
