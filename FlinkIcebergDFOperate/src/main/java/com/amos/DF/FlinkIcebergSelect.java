@@ -12,17 +12,12 @@ import org.apache.iceberg.flink.source.FlinkSource;
  * @create: 2022-03-31 13:51
  */
 public class FlinkIcebergSelect {
-
-
+    private static final String basePath = "hdfs://hadoop-slave2:6020/warehouse/iceberg/";
+    private static final String tablePath = basePath.concat("hadoop/flink_iceberg_df");
     public static void main(String[] args) throws Exception {
-
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
-
-        String basePath = "hdfs://hadoop-slave2:6020/warehouse/iceberg/";
-        String tablePath = basePath.concat("hadoop/flink_iceberg_df");
         TableLoader tableLoader = TableLoader.fromHadoopTable(tablePath);
-
         DataStream<RowData> batchData = FlinkSource.forRowData()
                 .env(env)
                 .tableLoader(tableLoader)
@@ -30,8 +25,6 @@ public class FlinkIcebergSelect {
                 .build();
 
         batchData.print();
-
-
         env.execute("Flink  Iceberg  Select");
     }
 }

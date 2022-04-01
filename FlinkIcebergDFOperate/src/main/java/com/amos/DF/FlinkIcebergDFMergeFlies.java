@@ -18,9 +18,9 @@ import java.util.HashMap;
  * @create: 2022-04-01 12:53
  */
 public class FlinkIcebergDFMergeFlies {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        env.enableCheckpointing(5000);
+        env.setParallelism(1);
 
         //使用hadoopCatalog的模式，获取Iceberg表
         HashMap<String, String> icebergMap = new HashMap<>();
@@ -34,12 +34,11 @@ public class FlinkIcebergDFMergeFlies {
         TableIdentifier tableIdentifier = TableIdentifier.of(Namespace.of("default"), "test_hadoop_dt_hidden");
         Table table = catalog.loadTable(tableIdentifier);
 
-
-        //执行合并操作，快照过期
+        //执行合并操作
         combineFiles(env, table);
+        //快照过期删除
         deleteOldSnapshot(table);
 
-//        env.execute("flink dataframe merge  small files");
     }
 
     //合并小文件

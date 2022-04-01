@@ -38,11 +38,11 @@ public class FlinkIcebergCreateInert {
     private static final String SOURCE_NAME = "kafka_source";
 
     public static void main(String[] args) throws Exception {
-        // 1 设置Flink执行环境
+        //  设置Flink执行环境
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         // 设置checkpoint
         env.enableCheckpointing(5000);
-        //Flink读取kafka中的数据配置
+        // Flink读取kafka中的数据配置
         KafkaSource<String> kafkaSource = KafkaSource.<String>builder()
                 .setBootstrapServers(BOOTS_SERVER)
                 .setTopics(TOPIC)
