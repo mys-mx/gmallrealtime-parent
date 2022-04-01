@@ -19,14 +19,14 @@ public class FlinkIcebergSelect {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
 
-        String basePath = "hdfs://hadoop01:8020/";
-        String tablePath = basePath.concat("warehouse/iceberg/sensordata");
+        String basePath = "hdfs://hadoop-slave2:6020/warehouse/iceberg/";
+        String tablePath = basePath.concat("hadoop/flink_iceberg_df");
         TableLoader tableLoader = TableLoader.fromHadoopTable(tablePath);
 
         DataStream<RowData> batchData = FlinkSource.forRowData()
                 .env(env)
                 .tableLoader(tableLoader)
-                .streaming(false)
+                .streaming(true)
                 .build();
 
         batchData.print();

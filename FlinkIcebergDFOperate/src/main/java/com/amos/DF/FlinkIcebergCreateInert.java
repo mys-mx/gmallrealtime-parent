@@ -31,7 +31,7 @@ public class FlinkIcebergCreateInert {
 
     // 4 Hadoop集群
     private static final String basePath = "hdfs://hadoop-slave2:6020/warehouse/iceberg/";
-    private static final String tablePath = basePath.concat("hadoop/sensordata");
+    private static final String tablePath = basePath.concat("hadoop/flink_iceberg_df");
     private static final String BOOTS_SERVER = "node187:9092,hadoop-slave2:9092,node186:9092";
     private static final String TOPIC = "flink-iceberg-topic";
     private static final String GROUPID = "flink-group-id1";
@@ -69,7 +69,7 @@ public class FlinkIcebergCreateInert {
         // 通过flink sql创建iceberg表
         Configuration conf = new Configuration();
         HadoopCatalog hpCatalog = new HadoopCatalog(conf, basePath);
-        TableIdentifier name = TableIdentifier.of("hadoop", "sensordata");
+        TableIdentifier name = TableIdentifier.of("hadoop", "flink_iceberg_df");
         // 不设置分区
         PartitionSpec spec = PartitionSpec.unpartitioned();
         // 构建schemal信息
