@@ -34,7 +34,7 @@ public class UniqueVisitApp {
         env.setParallelism(4);
         env.enableCheckpointing(5000, CheckpointingMode.EXACTLY_ONCE);
         env.getCheckpointConfig().setCheckpointTimeout(60000);
-        env.setStateBackend(new FsStateBackend("hdfs://hadoop01:8020/gmall/flink/checkpoint/uniquevisit"));
+        env.setStateBackend(new FsStateBackend("hdfs://hadoop101:8020/gmall/flink/checkpoint/uniquevisit"));
 
 
         //todo 2.从kafka中读取数据
